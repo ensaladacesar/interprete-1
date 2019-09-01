@@ -1,0 +1,32 @@
+<div class="container p-5">
+  <div class="row">
+    <div class="col">
+      <div ngbDropdown class="d-inline-block">
+        <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>Archivo</button>
+        <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+          <button ngbDropdownItem>Abrir</button>
+          <button ngbDropdownItem>Guardar</button>
+          <button ngbDropdownItem>Cerrar</button>
+        </div>
+      </div>
+
+      <button class="btn btn-outline-success mr-2 pl-2" (click)="obtenerData()">Compilar</button>
+
+    </div>
+  
+    
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <textarea [(ngModel)]="data" class="form-control" id="codeInput" rows="23"></textarea>
+      <textarea class="form-control" id="errors" rows="4"></textarea>
+
+    </div>
+    <div class="col-md-6">
+      <canvas width="500" height="500"></canvas>
+    </div>
+  </div>
+</div>
