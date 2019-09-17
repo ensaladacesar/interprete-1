@@ -22,6 +22,8 @@ export class AppComponent {
 
 
   obtenerData(){
+    this.errors = [];
+    this.errorsString = '';
     var singleStringCode = this.data.replace(/\n/g, ' ');//El código de entrada en una sola línea de código
     console.log(singleStringCode);
     var splitten = singleStringCode.match("Inicio(.*)Fin");;
@@ -63,33 +65,42 @@ export class AppComponent {
   }
 
   verifyFunctions(codeWords){
+    console.log(codeWords);
     this.codeFunctions = [];
     this.functionsErros = [];
     for(let i = 0; i < codeWords.length; i++){
-      if(codeWords[i].indexOf('(')){
+      if(codeWords[i].indexOf('(') && this.occurrences(codeWords[i], '(', false)==1){
         this.codeFunctions.push(codeWords[i].slice(0, codeWords[i].indexOf('(')));
         if(this.reservedWords.some(x => x === codeWords[i].slice(0, codeWords[i].indexOf('('))))
           this.functionsErros.push('0');
-        else
-        this.functionsErros.push('2');
+        else{
+          this.functionsErros.push('2');
+          this.errors.push('Error en línea ' + (i+3) +  ', palabra desconocida.');
+        }
+        
       }
       else{
+        console.log(codeWords[i])
         this.functionsErros.push('1');
+        this.errors.push('Error en línea ' + (i+3) +  ', declaración de función incorrecta.');
       }
 
     }
-    console.log(this.codeFunctions);
-    console.log(this.functionsErros);
+    
   }
 
   printErros(){
     this.errorsString = '';
-    console.log(this.errors);
-    if(this.errors.length)
-    for(let i = 0; i<this.errors.length; i++){
-      this.errorsString += this.errors[i] + '\n';
+    if(this.errors.length > 0){
+      for(let i = 0; i<this.errors.length; i++){
+        this.errorsString += this.errors[i] + '\n';
+      }
     }
-    console.log(this.errorsString);
+    else{
+      this.errorsString = 'Sin errores de sintaxis.';
+      this.drawFace();
+    }
+    
   }
 
   drawFace(){
@@ -99,5 +110,26 @@ export class AppComponent {
 
     console.log(neutral);
   }
+
+  occurrences(string, subString, allowOverlapping) {
+
+    string += "";
+    subString += "";
+    if (subString.length <= 0) return (string.length + 1);
+
+    var n = 0,
+        pos = 0,
+        step = allowOverlapping ? 1 : subString.length;
+
+    while (true) {
+        pos = string.indexOf(subString, pos);
+        if (pos >= 0) {
+            ++n;
+            pos += step;
+        } else break;
+    }
+    return n;
+}
+  
   
 }
