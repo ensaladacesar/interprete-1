@@ -18,14 +18,22 @@ export class AppComponent {
   codeFunctions: any = [];//Código ya separado en array por funciones
   functionsErros: any = [];
   reservedWords: any = ['DibujarCara', 'EliminarCara', 'Dormir', 'CambiarModo'];
-
-
+  arrayTipos: any = ['triste', 'enojada', 'feliz', 'dormida', 'neutral'];
+  radio: any = [];
+  width: any = [];
+  height: any = [];
+  tipoCara: any = [];
+  nombreCara: any = [];
+  coordX: any = [];
+  coordY: any = [];
+  
 
   obtenerData(){
+    document.getElementById('drawingArea').innerHTML = '';
     this.errors = [];
     this.errorsString = '';
+    this.nombreCara = [];
     var singleStringCode = this.data.replace(/\n/g, ' ');//El código de entrada en una sola línea de código
-    console.log(singleStringCode);
     var splitten = singleStringCode.match("Inicio(.*)Fin");;
 
     if(!splitten){
@@ -61,13 +69,14 @@ export class AppComponent {
     }
     console.log(this.codeWords);
     this.verifyFunctions(this.codeWords);
-    this.drawFace();
+    
   }
 
   verifyFunctions(codeWords){
     console.log(codeWords);
     this.codeFunctions = [];
     this.functionsErros = [];
+    let correct = true;
     for(let i = 0; i < codeWords.length; i++){
       if(codeWords[i].indexOf('(') && this.occurrences(codeWords[i], '(', false)==1){
         this.codeFunctions.push(codeWords[i].slice(0, codeWords[i].indexOf('(')));
@@ -76,6 +85,7 @@ export class AppComponent {
         else{
           this.functionsErros.push('2');
           this.errors.push('Error en línea ' + (i+3) +  ', palabra desconocida.');
+          correct = false;
         }
         
       }
@@ -83,10 +93,14 @@ export class AppComponent {
         console.log(codeWords[i])
         this.functionsErros.push('1');
         this.errors.push('Error en línea ' + (i+3) +  ', declaración de función incorrecta.');
+        correct = false;
       }
 
     }
-    
+    console.log(correct);
+    if(correct){
+      this.execute();
+    }
   }
 
   printErros(){
@@ -98,17 +112,75 @@ export class AppComponent {
     }
     else{
       this.errorsString = 'Sin errores de sintaxis.';
-      this.drawFace();
+      this.execute();
     }
-    
   }
 
-  drawFace(){
-    let cx = document.querySelector("canvas").getContext("2d");
-    let neutral = document.createElement("svg");
-    neutral.innerHTML = '<circle class="cls-1" cx="250" cy="250" r="239"/><path class="cls-2" d="M399,180.81a50.38,50.38,0,1,1-100.76,0"/><path class="cls-2" d="M201.4,180.81a50.38,50.38,0,1,1-100.75,0"/><circle class="cls-3" cx="250" cy="350" r="33"/><text class="cls-4" transform="translate(250 90.18)"><tspan xml:space="preserve">nouhuihsh</tspan></text>';
+  execute(){
+    var regExp = /\(([^)]+)\)/;
+    var matches = [];
+    var auxArray = [];
+    for(let i = 0; i < this.codeFunctions.length; i++){//'DibujarCara', 'EliminarCara', 'Dormir', 'CambiarModo'
 
-    console.log(neutral);
+      switch(this.codeFunctions[i]){
+        case 'DibujarCara':
+          matches = regExp.exec(this.codeWords[i]);
+          auxArray = matches[1].split(',');
+          console.log('dibujando cara');
+          this.drawFace(auxArray[0], auxArray[1], auxArray[2], auxArray[3], auxArray[4], i);
+        break;
+
+        case 'EliminarCara':
+          matches = regExp.exec(this.codeWords[i]);
+          auxArray = matches[1].split(',');
+          console.log('eliminando cara');
+
+        break;
+
+        case 'Dormir':
+          matches = regExp.exec(this.codeWords[i]);
+          console.log('durmiendo');
+          let time = matches[1] * 1000;
+          this.sleep(time);
+ 
+        break;
+
+        case 'CambiarModo':
+          matches = regExp.exec(this.codeWords[i]);
+          auxArray = matches[1].split(',');
+          console.log('cambio modo');
+
+        break;
+
+        default:
+
+
+        break;
+      }
+    }
+  }
+
+  drawFace(coordX, coordY, radio, nombreCara, tipoCara, linea){
+
+    let domObject = '';
+    let drawingArea = document.getElementById('drawingArea');
+    if(this.nombreCara.some(x => x === nombreCara)){
+      this.errorsString += 'Error en línea ' + (linea+3) + ' el nombre ' + nombreCara + ' ya ha sido utilizado\n';
+    }
+    else{
+      if(true){
+        this.nombreCara.push(nombreCara);
+        var div = document.createElement("div");
+        div.style.width = (radio*2)+'px';
+        div.style.height =(radio*2)+'px';
+        div.style.background = 'url(../assets/'+ tipoCara +'.svg)';
+        div.innerHTML = '<h5>'+nombreCara+'</h5>';
+        console.log(div);
+        document.getElementById("drawingArea").appendChild(div);
+
+      }
+    }
+    
   }
 
   occurrences(string, subString, allowOverlapping) {
@@ -129,7 +201,42 @@ export class AppComponent {
         } else break;
     }
     return n;
-}
+  }
+
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
   
   
+  
 }
+
+/*Programa Ejercicio
+Inicio
+   DibujarCara (30,30,20, Sofia, enojada)
+   DibujarCara (50,100,20, Carlos,feliz)
+   Dormir(2)
+   DibujarCara(120, 50, 20, Arturo,neutral)
+   Dormir(2)
+   CambiarModo(Sofia,neutral)  
+   Dormir(2)
+   CambiarModo(Carlos,triste)
+   Dormir(2)
+   CambiarModo( Arturo , triste)
+   Dormir(2)
+   CambiarModo(Sofia,dormida)  
+   Dormir(2)
+   CambiarModo(Carlos,enojada)
+   Dormir(2)
+   CambiarModo( Arturo , feliz )
+   Dormir(2)
+   EliminarCara(Carlos)
+   Dormir(2)
+   EliminarCara(Sofia)
+   Dormir(2)
+   DibujarCara(30,50,30, Azucena, feliz)
+   Dormir(2)
+   CambiarModo(Sofia,feliz)
+   Dormir(2)
+Fin
+*/
