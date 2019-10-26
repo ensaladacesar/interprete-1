@@ -40,7 +40,7 @@ export class AppComponent {
       this.errors.push('Error, no se detectan delimitadores de inicio y fin.');
     }
     else{
-      console.log(splitten[1]);
+      //console.log(splitten[1]);
       this.getReservedWords(splitten[1]);
     }
 
@@ -67,13 +67,13 @@ export class AppComponent {
         this.codeWords[i] += ')';
       } 
     }
-    console.log(this.codeWords);
+    //console.log(this.codeWords);
     this.verifyFunctions(this.codeWords);
     
   }
 
   verifyFunctions(codeWords){
-    console.log(codeWords);
+    //console.log(codeWords);
     this.codeFunctions = [];
     this.functionsErros = [];
     let correct = true;
@@ -90,14 +90,14 @@ export class AppComponent {
         
       }
       else{
-        console.log(codeWords[i])
+        //console.log(codeWords[i])
         this.functionsErros.push('1');
         this.errors.push('Error en línea ' + (i+3) +  ', declaración de función incorrecta.');
         correct = false;
       }
 
     }
-    console.log(correct);
+    //console.log(correct);
     if(correct){
       this.execute();
     }
@@ -126,20 +126,20 @@ export class AppComponent {
         case 'DibujarCara':
           matches = regExp.exec(this.codeWords[i]);
           auxArray = matches[1].split(',');
-          console.log('dibujando cara');
+          //console.log('dibujando cara');
           this.drawFace(auxArray[0], auxArray[1], auxArray[2], auxArray[3], auxArray[4], i);
         break;
 
         case 'EliminarCara':
           matches = regExp.exec(this.codeWords[i]);
           auxArray = matches[1].split(',');
-          console.log('eliminando cara');
+          //console.log('eliminando cara');
 
         break;
 
         case 'Dormir':
           matches = regExp.exec(this.codeWords[i]);
-          console.log('durmiendo');
+          //console.log('durmiendo');
           let time = matches[1] * 1000;
           this.sleep(time);
  
@@ -148,7 +148,7 @@ export class AppComponent {
         case 'CambiarModo':
           matches = regExp.exec(this.codeWords[i]);
           auxArray = matches[1].split(',');
-          console.log('cambio modo');
+          //console.log('cambio modo');
 
         break;
 
@@ -168,19 +168,21 @@ export class AppComponent {
       this.errorsString += 'Error en línea ' + (linea+3) + ' el nombre ' + nombreCara + ' ya ha sido utilizado\n';
     }
     else{
-      if(true){
+      console.log(radio);
+      if(((coordX - radio>=0) && (Number(coordX) + Number(radio) <= 300)) && ((Number(coordY) - Number(radio)>=0) && (Number(coordY) + Number(radio) <= 300))){
         this.nombreCara.push(nombreCara);
         var div = document.createElement("div");
         div.style.width = (radio*2)+'px';
         div.style.height =(radio*2)+'px';
+        div.style.marginBottom = coordY + 'px';
+        div.style.marginLeft = coordX + 'px';
+        div.style.position = 'absolute';
         div.style.background = 'url(../assets/'+ tipoCara +'.svg)';
         div.innerHTML = '<h5>'+nombreCara+'</h5>';
         console.log(div);
         document.getElementById("drawingArea").appendChild(div);
-
       }
     }
-    
   }
 
   occurrences(string, subString, allowOverlapping) {
